@@ -1,1 +1,12 @@
-(function(_0x5c9678,_0x2423dc){var _0x327c6d=_0x1242,_0x55a9d1=_0x5c9678();while(!![]){try{var _0x3ccfac=-parseInt(_0x327c6d(0x1c9))/0x1+parseInt(_0x327c6d(0x1c7))/0x2+-parseInt(_0x327c6d(0x1ce))/0x3*(parseInt(_0x327c6d(0x1c8))/0x4)+parseInt(_0x327c6d(0x1cf))/0x5+-parseInt(_0x327c6d(0x1cb))/0x6*(parseInt(_0x327c6d(0x1ca))/0x7)+-parseInt(_0x327c6d(0x1cd))/0x8+parseInt(_0x327c6d(0x1cc))/0x9*(parseInt(_0x327c6d(0x1d0))/0xa);if(_0x3ccfac===_0x2423dc)break;else _0x55a9d1['push'](_0x55a9d1['shift']());}catch(_0x265c91){_0x55a9d1['push'](_0x55a9d1['shift']());}}}(_0x4fdd,0x53df2),print('ROBLOX'));function _0x1242(_0x1daf6a,_0x57f8df){var _0x4fdd68=_0x4fdd();return _0x1242=function(_0x124261,_0x33e053){_0x124261=_0x124261-0x1c7;var _0x4dc82e=_0x4fdd68[_0x124261];return _0x4dc82e;},_0x1242(_0x1daf6a,_0x57f8df);}function _0x4fdd(){var _0x376f27=['702656WgmIEq','4xwMQcR','262298EYxEtR','4294941XTbXNk','6uCFbNK','3294IafqvY','844328LbkWlJ','1503789muvpgi','2076525vGURJs','28950ZUefCJ'];_0x4fdd=function(){return _0x376f27;};return _0x4fdd();}
+--[[
+ .____                  ________ ___.    _____                           __                
+ |    |    __ _______   \_____  \\_ |___/ ____\_ __  ______ ____ _____ _/  |_  ___________ 
+ |    |   |  |  \__  \   /   |   \| __ \   __\  |  \/  ___// ___\\__  \\   __\/  _ \_  __ \
+ |    |___|  |  // __ \_/    |    \ \_\ \  | |  |  /\___ \\  \___ / __ \|  | (  <_> )  | \/
+ |_______ \____/(____  /\_______  /___  /__| |____//____  >\___  >____  /__|  \____/|__|   
+         \/          \/         \/    \/                \/     \/     \/                   
+          \_Welcome to LuaObfuscator.com   (Alpha 0.1.6) ~  Much Love, Ferib 
+
+]]--
+
+local v0=string.char;local v1=string.byte;local v2=string.sub;local v3=bit32 or bit;local v4=v3.bxor;local v5=table.concat;local v6=table.insert;local function v7(v8,v9)local v10={};for i=1, #v8 do v6(v10,v0(v4(v1(v2(v8,i,i + 1)),v1(v2(v9,1 + ((i-1)% #v9),1 + ((i-1)% #v9) + 1)))%256));end return v5(v10);end print(v7("\155\0","\207\117\126\86"));
