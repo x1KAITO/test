@@ -16,7 +16,7 @@ function loadVotes() {
     if (!fs.existsSync(dataFile)) {
       fs.writeFileSync(dataFile, JSON.stringify({ clean: 0, notClean: 0 }));
     }
-    const data = fs.readFileSync(dataFile);
+    const data = fs.readFileSync(dataFile, 'utf-8');
     return JSON.parse(data);
   } catch (error) {
     console.error('โหลดไฟล์โหวตล้มเหลว:', error);
