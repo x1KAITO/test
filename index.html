@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>เว็บสำรวจ ล้าง กับ ไม่ล้าง</title>
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: #f0f0f0;
+      text-align: center;
+      padding: 50px;
+    }
+    h1 {
+      color: #333;
+    }
+    .btn {
+      font-size: 20px;
+      padding: 15px 40px;
+      margin: 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      color: white;
+      user-select: none;
+    }
+    .btn-clean {
+      background-color: #4CAF50;
+    }
+    .btn-not-clean {
+      background-color: #f44336;
+    }
+    .btn:disabled {
+      background-color: #888;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    #message {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #333;
+      min-height: 30px;
+    }
+    #result {
+      margin-top: 40px;
+      font-size: 22px;
+      color: #222;
+    }
+  </style>
+</head>
+<body>
+  <h1>สำรวจ: คุณเลือก “ล้าง” หรือ “ไม่ล้าง”?</h1>
+  
+  <button class="btn btn-clean" id="btnClean">ล้าง</button>
+  <button class="btn btn-not-clean" id="btnNotClean">ไม่ล้าง</button>
+  
+  <div id="message"></div>
+
+  <div id="result">
+    <p>ล้าง: <span id="cleanCount">0</span> โหวต</p>
+    <p>ไม่ล้าง: <span id="notCleanCount">0</span> โหวต</p>
+    <p>รวม: <span id="totalCount">0</span> โหวต</p>
+  </div>
+
+  <script>
+    const btnClean = document.getElementById('btnClean');
+    const btnNotClean = document.getElementById('btnNotClean');
+    const message = document.getElementById('message');
+    const cleanCountEl = document.getElementById('cleanCount');
+    const notCleanCountEl = document.getElementById('notCleanCount');
+    const totalCountEl = document.getElementById('totalCount');
+
+    function fetchVotes() {
+      fetch('/votes')
+        .then(res => res.json())
+        .then(data => {
+          updateResult(data);
+          checkIfVoted();
+        })
+        .catch(err => {
+          message.style.color = 'red';
+          message.textContent = 'โหลดข้อมูลโหวตล้มเหลว ลองใหม่อีกครั้ง';
+          console.error(err);
+        });
+    }
+
+    function updateResult(votes) {
+      cleanCountEl.textContent = votes.clean;
+      notCleanCountEl.textContent = votes.notClean;
+      totalCountEl.textContent = votes.clean + votes.notClean;
+    }
+
+    function disableButtons() {
+      btnClean.disabled = true;
+      btnNotClean.disabled = true;
+    }
+
+    function enableButtons() {
+      btnClean.disabled = false;
+      btnNotClean.disabled = false;
+    }
+
+    function checkIfVoted() {
+      const cookies = document.cookie.split(';').map(c => c.trim());
+      const votedCookie = cookies.find(c => c.startsWith('voted='));
+      if (votedCookie) {
+        message.style.color = 'green';
+        message.textContent = 'คุณโหวตไปแล้วนะเพื่อน ขอบคุณมาก!';
+        disableButtons();
+      } else {
+        message.textContent = '';
+        enableButtons();
+      }
+    }
+
+    function vote(choice) {
+      fetch('/vote', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ choice })
+      })
+      .then(res => res.json().then(data => ({status: res.status, body: data})))
+      .then(({status, body}) => {
+        if(status === 200) {
+          message.style.color = 'green';
+          message.textContent = body.message;
+          updateResult(body.votes);
+          disableButtons();
+        } else {
+          message.style.color = 'red';
+          message.textContent = body.message;
+          disableButtons();
+        }
+      })
+      .catch(err => {
+        message.style.color = 'red';
+        message.textContent = 'เกิดข้อผิดพลาด ลองใหม่อีกครั้ง';
+        console.error(err);
+      });
+    }
+
+    btnClean.addEventListener('click', () => vote('clean'));
+    btnNotClean.addEventListener('click', () => vote('notClean'));
+
+    fetchVotes();
+  </script>
+</body>
+</html>
