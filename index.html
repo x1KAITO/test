@@ -2,108 +2,107 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>เว็บสำรวจ ล้าง กับ ไม่ล้าง</title>
+  <title>คุณล้างยัง?</title>
   <style>
     body {
       font-family: 'Sarabun', sans-serif;
-      background: #f0f0f0;
+      background: #f9f9f9;
       text-align: center;
       padding: 50px;
     }
     h1 {
-      color: #333;
+      color: #222;
+      margin-bottom: 30px;
     }
-    .btn {
-      font-size: 20px;
-      padding: 15px 40px;
+    button {
+      font-size: 24px;
+      padding: 15px 50px;
       margin: 20px;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
-      transition: background 0.3s ease;
       color: white;
+      transition: background 0.3s ease;
       user-select: none;
     }
-    .btn-clean {
-      background-color: #4CAF50;
+    #btnWashed {
+      background-color: #2196F3;
     }
-    .btn-not-clean {
+    #btnNotWashed {
       background-color: #f44336;
     }
-    .btn:disabled {
-      background-color: #888;
+    button:disabled {
+      background-color: #999;
       cursor: not-allowed;
       opacity: 0.6;
     }
     #message {
-      margin-top: 20px;
       font-size: 20px;
-      color: #333;
+      margin-top: 20px;
       min-height: 30px;
+      color: #333;
     }
-    #result {
+    #results {
       margin-top: 40px;
       font-size: 22px;
-      color: #222;
+      color: #444;
     }
   </style>
 </head>
 <body>
-  <h1>สำรวจ: คุณเลือก “ล้าง” หรือ “ไม่ล้าง”?</h1>
-  
-  <button class="btn btn-clean" id="btnClean">ล้าง</button>
-  <button class="btn btn-not-clean" id="btnNotClean">ไม่ล้าง</button>
-  
+  <h1>คุณล้างยัง?</h1>
+  <button id="btnWashed">ล้างแล้ว</button>
+  <button id="btnNotWashed">ยังไม่ล้าง</button>
+
   <div id="message"></div>
 
-  <div id="result">
-    <p>ล้าง: <span id="cleanCount">0</span> โหวต</p>
-    <p>ไม่ล้าง: <span id="notCleanCount">0</span> โหวต</p>
-    <p>รวม: <span id="totalCount">0</span> โหวต</p>
+  <div id="results">
+    <p>ล้างแล้ว: <span id="washedCount">0</span> โหวต</p>
+    <p>ยังไม่ล้าง: <span id="notWashedCount">0</span> โหวต</p>
+    <p>รวมโหวต: <span id="totalCount">0</span></p>
   </div>
 
   <script>
-    const btnClean = document.getElementById('btnClean');
-    const btnNotClean = document.getElementById('btnNotClean');
+    const btnWashed = document.getElementById('btnWashed');
+    const btnNotWashed = document.getElementById('btnNotWashed');
     const message = document.getElementById('message');
-    const cleanCountEl = document.getElementById('cleanCount');
-    const notCleanCountEl = document.getElementById('notCleanCount');
+    const washedCountEl = document.getElementById('washedCount');
+    const notWashedCountEl = document.getElementById('notWashedCount');
     const totalCountEl = document.getElementById('totalCount');
 
     function fetchVotes() {
       fetch('/votes')
         .then(res => res.json())
         .then(data => {
-          updateResult(data);
-          checkIfVoted();
+          updateResults(data);
+          checkVoted();
         })
-        .catch(err => {
+        .catch(() => {
           message.style.color = 'red';
-          message.textContent = 'โหลดข้อมูลโหวตล้มเหลว ลองใหม่อีกครั้ง';
-          console.error(err);
+          message.textContent = 'โหลดข้อมูลล้มเหลว ลองใหม่อีกครั้งนะเพื่อน';
         });
     }
 
-    function updateResult(votes) {
-      cleanCountEl.textContent = votes.clean;
-      notCleanCountEl.textContent = votes.notClean;
-      totalCountEl.textContent = votes.clean + votes.notClean;
+    function updateResults(votes) {
+      washedCountEl.textContent = votes.washed;
+      notWashedCountEl.textContent = votes.notWashed;
+      totalCountEl.textContent = votes.washed + votes.notWashed;
     }
 
     function disableButtons() {
-      btnClean.disabled = true;
-      btnNotClean.disabled = true;
+      btnWashed.disabled = true;
+      btnNotWashed.disabled = true;
     }
 
     function enableButtons() {
-      btnClean.disabled = false;
-      btnNotClean.disabled = false;
+      btnWashed.disabled = false;
+      btnNotWashed.disabled = false;
     }
 
-    function checkIfVoted() {
+    function checkVoted() {
       const cookies = document.cookie.split(';').map(c => c.trim());
-      const votedCookie = cookies.find(c => c.startsWith('voted='));
-      if (votedCookie) {
+      const voted = cookies.find(c => c.startsWith('voted='));
+      if (voted) {
         message.style.color = 'green';
         message.textContent = 'คุณโหวตไปแล้วนะเพื่อน ขอบคุณมาก!';
         disableButtons();
@@ -116,31 +115,30 @@
     function vote(choice) {
       fetch('/vote', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ choice })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ choice }),
       })
-      .then(res => res.json().then(data => ({status: res.status, body: data})))
-      .then(({status, body}) => {
-        if(status === 200) {
-          message.style.color = 'green';
-          message.textContent = body.message;
-          updateResult(body.votes);
-          disableButtons();
-        } else {
+        .then(res => res.json().then(data => ({ status: res.status, body: data })))
+        .then(({ status, body }) => {
+          if (status === 200) {
+            message.style.color = 'green';
+            message.textContent = body.message;
+            updateResults(body.votes);
+            disableButtons();
+          } else {
+            message.style.color = 'red';
+            message.textContent = body.message;
+            disableButtons();
+          }
+        })
+        .catch(() => {
           message.style.color = 'red';
-          message.textContent = body.message;
-          disableButtons();
-        }
-      })
-      .catch(err => {
-        message.style.color = 'red';
-        message.textContent = 'เกิดข้อผิดพลาด ลองใหม่อีกครั้ง';
-        console.error(err);
-      });
+          message.textContent = 'เกิดข้อผิดพลาด ลองใหม่อีกครั้งนะเพื่อน';
+        });
     }
 
-    btnClean.addEventListener('click', () => vote('clean'));
-    btnNotClean.addEventListener('click', () => vote('notClean'));
+    btnWashed.addEventListener('click', () => vote('washed'));
+    btnNotWashed.addEventListener('click', () => vote('notWashed'));
 
     fetchVotes();
   </script>
